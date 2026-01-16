@@ -79,6 +79,7 @@ usage: worker.py [-h]
 
 # ③ Data loading - optional settings
 [--cfg.function CFG.FUNCTION] # Name of the table function for accessing the to-be-loaded files
+[--cfg.file_prefix CFG.FILE_PREFIX] # A prefix to the file path
 [--cfg.bucket_access_key CFG.ACCESS_KEY] # Access key for the object storage bucket hosting the files to be loaded
 [--cfg.bucket_access_secret CFG.ACCESS_SECRET] # Access secret for the object storage bucket hosting the files to be loaded
 [--cfg.format CFG.FORMAT] # Name of the file format used

@@ -91,6 +91,9 @@ ap.add_argument("--table", required=True,
 ap.add_argument("--cfg.function", required=False, default='s3',
                 help='Name of the table function for accessing the to-be-loaded files.')
 
+ap.add_argument("--cfg.file_prefix", required=False, default='',
+                help='A prefix to the file path.')
+
 ap.add_argument("--cfg.bucket_access_key", required=False)
 ap.add_argument("--cfg.bucket_access_secret", required=False)
 
@@ -308,7 +311,7 @@ def create_batch_load_command(file_url, db_staging, tbl_staging, configuration):
 
     command = f"""
             INSERT INTO {db_staging}.{tbl_staging}
-            {query_clause_fragments['select_fragment']} FROM {query_clause_fragments['function_fragment']}'{file_url}'{query_clause_fragments['access_fragment']}{query_clause_fragments['format_fragment']}{query_clause_fragments['structure_fragment']})
+            {query_clause_fragments['select_fragment']} FROM {query_clause_fragments['function_fragment']}'{query_clause_fragments['file_prefix_fragment']}{file_url}'{query_clause_fragments['access_fragment']}{query_clause_fragments['format_fragment']}{query_clause_fragments['structure_fragment']})
             {query_clause_fragments['filter_fragment']}
             {query_clause_fragments['settings_fragment']}
         """
@@ -335,6 +338,7 @@ def to_query_clause_fragments(configuration):
 
     return {
         'function_fragment': f"""{configuration['function']}(""",
+        'file_prefix_fragment': configuration['file_prefix'],
         'access_fragment': access_fragment,
         'select_fragment': f"""{configuration['select']} """,
         'format_fragment': f""", '{configuration['format']}'""" if 'format' in configuration else '',
@@ -619,6 +623,7 @@ def move_partition(partition_id, db_src, tbl_src, db_dst, tbl_dst, client):
 def to_configuration_dictionary(args):
     configuration = {}
     add_to_dictionary_if_present(configuration, args, 'cfg.function', 'function')
+    add_to_dictionary_if_present(configuration, args, 'cfg.file_prefix', 'file_prefix')
     add_to_dictionary_if_present(configuration, args, 'cfg.bucket_access_key', 'bucket_access_key')
     add_to_dictionary_if_present(configuration, args, 'cfg.bucket_access_secret', 'bucket_access_secret')
     add_to_dictionary_if_present(configuration, args, 'cfg.format', 'format')
